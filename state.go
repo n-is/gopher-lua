@@ -7,7 +7,6 @@ package lua
 import (
 	"context"
 	"fmt"
-	"github.com/yuin/gopher-lua/parse"
 	"io"
 	"math"
 	"os"
@@ -16,6 +15,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/n-is/gopher-lua/parse"
 )
 
 const MultRet = -1
@@ -1840,6 +1841,10 @@ func (ls *LState) RawSet(tb *LTable, key LValue, value LValue) {
 
 func (ls *LState) RawSetInt(tb *LTable, key int, value LValue) {
 	tb.RawSetInt(key, value)
+}
+
+func (ls *LState) RawSetString(tb *LTable, key string, value LValue) {
+	tb.RawSetString(key, value)
 }
 
 func (ls *LState) SetField(obj LValue, key string, value LValue) {

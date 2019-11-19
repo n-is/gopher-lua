@@ -2,9 +2,10 @@ package lua
 
 import (
 	"fmt"
-	"github.com/yuin/gopher-lua/parse"
 	"os"
 	"testing"
+
+	"github.com/n-is/gopher-lua/parse"
 )
 
 const maxMemory = 40
