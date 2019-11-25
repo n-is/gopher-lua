@@ -1333,7 +1333,7 @@ func NewState(opts ...Options) *LState {
 			CallStackSize: CallStackSize,
 			RegistrySize:  RegistrySize,
 		})
-		ls.OpenAllLibs()
+		ls.OpenLibs()
 	} else {
 		if opts[0].CallStackSize < 1 {
 			opts[0].CallStackSize = CallStackSize
@@ -1351,7 +1351,7 @@ func NewState(opts ...Options) *LState {
 		}
 		ls = newLState(opts[0])
 		if !opts[0].SkipOpenLibs {
-			ls.OpenAllLibs()
+			ls.OpenLibs()
 		}
 	}
 	return ls
