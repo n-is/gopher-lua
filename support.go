@@ -1,6 +1,8 @@
 package lua
 
-import "sync"
+import (
+	"sync"
+)
 
 var (
 	origMathFuncs map[string]LGFunction //< Map to hold original mathlib map
@@ -14,14 +16,15 @@ var (
 func init() {
 
 	// Copy original functions map to respective orig maps
-	copyFuncsMap(mathFuncs, origMathFuncs)
-	copyFuncsMap(osFuncs, origOsFuncs)
-}
 
-func copyFuncsMap(src, dst map[string]LGFunction) {
-	dst = make(map[string]LGFunction, len(src))
-	for key, val := range src {
-		dst[key] = val
+	origMathFuncs = make(map[string]LGFunction, len(mathFuncs))
+	for key, val := range mathFuncs {
+		origMathFuncs[key] = val
+	}
+
+	origOsFuncs = make(map[string]LGFunction, len(osFuncs))
+	for key, val := range osFuncs {
+		origOsFuncs[key] = val
 	}
 }
 
@@ -64,21 +67,6 @@ func addLibFunc(funcsMap map[string]LGFunction, name string, f LGFunction) {
 	funcsMap[name] = f
 }
 
-func openLib(funcsMap map[string]LGFunction,
-	origFuncs map[string]LGFunction,
-	open LGFunction,
-	mu *sync.Mutex,
-	L *LState) int {
-
-	mu.Lock()
-	origFuncs = funcsMap
-	val := open(L)
-	mu.Unlock()
-
-	return val
-
-}
-
 // #endregion
 
 // #region MathLib
@@ -104,7 +92,13 @@ func (ml *MathLib) AddFunc(name string, f LGFunction) {
 }
 
 func (ml *MathLib) Open(L *LState) int {
-	return openLib(ml.funcsMap, mathFuncs, OpenMath, &mathFuncsMu, L)
+
+	mathFuncsMu.Lock()
+	mathFuncs = ml.funcsMap
+	val := OpenMath(L)
+	mathFuncsMu.Unlock()
+
+	return val
 }
 
 // #endregion
@@ -132,7 +126,13 @@ func (ol *OsLib) AddFunc(name string, f LGFunction) {
 }
 
 func (ol *OsLib) Open(L *LState) int {
-	return openLib(ol.funcsMap, osFuncs, OpenOs, &osFuncsMu, L)
+
+	osFuncsMu.Lock()
+	osFuncs = ol.funcsMap
+	val := OpenOs(L)
+	osFuncsMu.Unlock()
+
+	return val
 }
 
 // #endregion
